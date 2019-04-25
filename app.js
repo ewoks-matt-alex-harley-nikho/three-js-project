@@ -6,6 +6,7 @@ var appContainer,
     scene,
     controls,
     createClouds,
+    createDragon,
     camera,
     Colors,
     dragon,
@@ -23,7 +24,9 @@ Colors = {
     brown: 0x59332e,
     pink: 0xF5986E,
     brownDark: 0x23190f,
-    blue: 0x68c3c0
+    blue: 0x68c3c0,
+    gray: 0xdfdfdf,
+    green: 0x616f39
 };
 
 HEIGHT = window.innerHeight;
@@ -71,7 +74,7 @@ function createLights() {
     // A hemisphere light is a gradient colored light;
     // the first parameter is the sky color, the second parameter is the ground color,
     // the third parameter is the intensity of the light
-    hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9)
+    hemisphereLight = new THREE.HemisphereLight(0xaaaaaa, 0x000000, .9);
 
     // A directional light shines from a specific direction.
     // It acts like the sun, that means that all the rays produced are parallel.
@@ -92,7 +95,6 @@ function createLights() {
     shadowLight.shadow.camera.far = 1000;
 
     // define the resolution of the shadow; the higher the better,
-    // but also the more expensive and less performant
     shadowLight.shadow.mapSize.width = 2048;
     shadowLight.shadow.mapSize.height = 2048;
 
@@ -109,13 +111,10 @@ function createLights() {
 createClouds = function () {
 
     this.mesh = new THREE.Object3D();
-
     var boxCloud = new THREE.BoxGeometry(20, 20, 20);
-    var boxCloudMat = new THREE.MeshPhongMaterial({
-        color: Colors.white
-    });
+    var boxCloudMat = new THREE.MeshNormalMaterial({ shading: THREE.flatShading });
 
-    var cloudBlocks = 4.5 + Math.floor(Math.random() * 3);
+    var cloudBlocks = 4.2 + Math.floor(Math.random() * 3);
 
     for (var i = 0; i < cloudBlocks; i++) {
         var newMesh = new THREE.Mesh(boxCloud, boxCloudMat)
@@ -126,7 +125,7 @@ createClouds = function () {
         newMesh.rotation.z = Math.random() * Math.PI * 2;
 
 
-        var cloudSize = .1 + Math.random() * 1.5;
+        var cloudSize = .3 + Math.random() * 1.2;
         newMesh.scale.set(cloudSize, cloudSize, cloudSize);
 
         // allow each cube to cast and to receive shadows
@@ -140,26 +139,20 @@ createClouds = function () {
 
 // Define a Sky Object
 skyObjects = function () {
-    // Create an empty container
     this.mesh = new THREE.Object3D();
+    this.nClouds = 21; // Cloud count
 
-    // choose a number of clouds to be scattered in the sky
-    this.nClouds = 15;
-
-    // To distribute the clouds consistently,
-    // we need to place them according to a uniform angle
     var stepAngle = Math.PI * 2 / this.nClouds;
 
     // create the clouds
     for (var i = 0; i < this.nClouds; i++) {
+
         var c = new createClouds;
 
         // set the rotation and the position of each cloud;
-        // for that we use a bit of trigonometry
         var a = stepAngle * i; // this is the final angle of the cloud
-        var h = 750 + Math.random() * 500; // this is the distance between the center of the axis and the cloud itself
+        var h = 720 + Math.random() * 300; // this is the distance between the center of the axis and the cloud itself
 
-        // in case you don't:
         // we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
         c.mesh.position.y = Math.sin(a) * h;
         c.mesh.position.x = Math.cos(a) * h;
@@ -179,7 +172,6 @@ skyObjects = function () {
     }
 };
 
-// Now we instantiate the sky and push its center a bit
 // towards the bottom of the screen
 function createSky() {
     sky = new skyObjects;
@@ -188,63 +180,73 @@ function createSky() {
 }
 
 
-// function createDragon () {
-//
-//     //////////////////////////////
-//     //     Dragon Body Mat     //
-//     /////////////////////////////
-//
-//     // material for dragon
-//     var redMat = THREE.MeshLambertMaterial({
-//         color: Colors.red,
-//         shading: THREE.flatShading
-//     });
-//     var brownMat = THREE.MeshLambertMaterial({
-//         color: Colors.brown,
-//         shading: THREE.flatShading
-//     });
-//     var whiteMat = THREE.MeshLambertMaterial({
-//         color: Colors.white,
-//         shading: THREE.flatShading
-//     });
-//     var pinkMat = THREE.MeshLambertMaterial({
-//         color: Colors.pink,
-//         shading: THREE.flatShading
-//     });
-//     var blueMat = THREE.MeshLambertMaterial({
-//         color: Colors.blue,
-//         shading: THREE.flatShading
-//     });
-//
-//     var greenMat = THREE.MeshLambertMaterial({
-//         color: Colors.green,
-//         shading: THREE.flatShading
-//     });
-//
-//     //////////////////////////////
-//     //     Dragon Body Geom    //
-//     /////////////////////////////
-//
-//     var bodyGeom = new THREE.BoxGeometry( 2, 2, 2 );
-//     var bodyMaterial = greenMat;
-//
-//
-//     // Face
-//
-//     // Horns
-//
-//     // Wings
-//
-//     var wingGeom = new THREE.CubeGeometry(5, 5, 5);
-//     var wingMaterial = redMat;
-//
-//     // Tail
-//
-//     dragon = new THREE.Mesh( bodyGeom, bodyMaterial, wingGeom, wingMaterial );
-//
-//     scene.add(dragon);
-//
-// }
+dragon = function () {
+
+    //////////////////////////////
+    //     Dragon Body Mat     //
+    /////////////////////////////
+
+    // material for dragon
+    var redMat = THREE.MeshLambertMaterial({
+        color: Colors.red,
+        shading: THREE.flatShading
+    });
+    var brownMat = THREE.MeshLambertMaterial({
+        color: Colors.brown,
+        shading: THREE.flatShading
+    });
+    var whiteMat = THREE.MeshLambertMaterial({
+        color: Colors.white,
+        shading: THREE.flatShading
+    });
+    var pinkMat = THREE.MeshLambertMaterial({
+        color: Colors.pink,
+        shading: THREE.flatShading
+    });
+    var blueMat = THREE.MeshLambertMaterial({
+        color: Colors.blue,
+        shading: THREE.flatShading
+    });
+
+    var greenMat = THREE.MeshLambertMaterial({
+        color: Colors.green,
+        shading: THREE.flatShading
+    });
+
+    //////////////////////////////
+    //     Dragon Body Geom    //
+    /////////////////////////////
+
+    // Body
+
+    var bodyGeom = new THREE.BoxGeometry( 2, 2, 2 );
+    var bodyMaterial = greenMat;
+
+    // Wings
+    var wingGeom = new THREE.CubeGeometry(5, 5, 5 );
+    var wingMaterial = redMat;
+
+    // Face
+    var faceGeom = new THREE.BoxGeometry(1, 1, 1 );
+    var faceMaterial = greenMat;
+
+    // Eyes
+    var eyesGeom = new THREE.PlaneGeometry(1, 1, 1);
+    var eyesMaterial = whiteMat;
+
+    // Pupils
+    var pupilGeom = new THREE.PlaneGeometry (.3, .3, .3)
+    var pupilMaterial = blueMat;
+
+    // Horns
+    var hornGeom = new THREE.ConeGeometry(2,2,2)
+    var hornMaterial = brownMat;
+
+
+
+
+
+};
 createScene();
 createLights();
 createSky();
