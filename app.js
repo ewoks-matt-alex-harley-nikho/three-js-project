@@ -2,7 +2,7 @@
 
 //Global stuff
 
-var hemisphereLight, shadowLight, HEIGHT, WIDTH, Colors, camera, scene, renderer, dragon, appContainer;
+var hemisphereLight, controls, createClouds, shadowLight, HEIGHT, WIDTH, Colors, camera, scene, renderer, dragon, appContainer;
 
 Colors = {
     red:0xf25346,
@@ -23,8 +23,7 @@ function createScene () {
     // Scene setup
     scene = new THREE.Scene();
 
-    // Camera setup: FoV, perspective, near, far
-    camera = new THREE.PerspectiveCamera( 85, window.innerWidth / window.innerHeight, .5, 1000 );
+
 
     // Calls on WebGL
     renderer = new THREE.WebGLRenderer({
@@ -32,9 +31,20 @@ function createScene () {
         antialias: true
     });
 
+
+    // camera
+
+    // Camera setup: FoV, perspective, near, far
+    camera = new THREE.PerspectiveCamera( 85, window.innerWidth / window.innerHeight, .5, 1000 );
     camera.position.z = 5;
 
-    // Creates Fog
+    // controls
+
+    controls = new THREE.OrbitControls(camera);
+    controls.update;
+
+
+    // Creates Fog - distance based
     scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
 
     // Scene Render and DOM call
@@ -43,7 +53,6 @@ function createScene () {
     renderer.setSize( window.innerWidth, window.innerHeight );
     appContainer = document.getElementById('app');
     appContainer.appendChild( renderer.domElement );
-
 }
 
 function createLights() {
@@ -78,41 +87,120 @@ function createLights() {
     // to activate the lights, just add them to the scene
     scene.add(hemisphereLight);
     scene.add(shadowLight);
+
 }
 
-function createDragon () {
+//////////////////////////////
+///////// Clouds ////////////
+/////////////////////////////
 
-    // Add boxes in the scene
-    var bodyGeom = new THREE.BoxGeometry( 2, 2, 2 );
-    var bodyMaterial = new THREE.MeshBasicMaterial({
-        color: Colors.red,
-        shading: THREE.flatShading
+createClouds = function() {
+
+    this.mesh = new Object3D();
+
+    var boxClouds = new THREE.BoxGeometry(20, 20, 20);
+    var boxCloudMat = new THREE.MeshPhongMaterial({
+        colors: Colors.white
     });
-    dragon = new THREE.Mesh( bodyGeom, bodyMaterial );
 
-    // Head
+    var cloudBlocks = 3 + Math.floor(Math.random() * 3);
 
-    // Wings
+    for(var i = 0; i < cloudBlocks; i++) {
 
-    // Tail
+        var newMesh = THREE.Mesh(boxClouds, boxCloudMat)
 
-    scene.add(dragon);
+        newMesh.position.x = i * 10;
+        newMesh.position.y = Math.random() * 15;
+        newMesh.rotation.y = Math.random() * Math.PI * 2;
+        newMesh.position.z = Math.random() * 15;
+        newMesh.rotation.z = Math.random() * Math.PI * 2;
 
-}
+
+        var cloudSize = .1 + Math.random()*.9;
+        newMesh.scale.set(cloudSize, cloudSize, cloudSize);
+
+        // allow each cube to cast and to receive shadows
+        newMesh.castShadow = true;
+        newMesh.receiveShadow = true;
+
+        // add the cube to the container we first created
+        this.mesh.add(newMesh);
+    }
+};
+
+
+// function createDragon () {
+//
+//     //////////////////////////////
+//     //     Dragon Body Mat     //
+//     /////////////////////////////
+//
+//     // material for dragon
+//     var redMat = THREE.MeshLambertMaterial({
+//         color: Colors.red,
+//         shading: THREE.flatShading
+//     });
+//     var brownMat = THREE.MeshLambertMaterial({
+//         color: Colors.brown,
+//         shading: THREE.flatShading
+//     });
+//     var whiteMat = THREE.MeshLambertMaterial({
+//         color: Colors.white,
+//         shading: THREE.flatShading
+//     });
+//     var pinkMat = THREE.MeshLambertMaterial({
+//         color: Colors.pink,
+//         shading: THREE.flatShading
+//     });
+//     var blueMat = THREE.MeshLambertMaterial({
+//         color: Colors.blue,
+//         shading: THREE.flatShading
+//     });
+//
+//     var greenMat = THREE.MeshLambertMaterial({
+//         color: Colors.green,
+//         shading: THREE.flatShading
+//     });
+//
+//     //////////////////////////////
+//     //     Dragon Body Geom    //
+//     /////////////////////////////
+//
+//     var bodyGeom = new THREE.BoxGeometry( 2, 2, 2 );
+//     var bodyMaterial = greenMat;
+//
+//
+//     // Face
+//
+//     // Horns
+//
+//     // Wings
+//
+//     var wingGeom = new THREE.CubeGeometry(5, 5, 5);
+//     var wingMaterial = redMat;
+//
+//     // Tail
+//
+//     dragon = new THREE.Mesh( bodyGeom, bodyMaterial, wingGeom, wingMaterial );
+//
+//     scene.add(dragon);
+//
+// }
 
 createScene();
 createLights();
-createDragon();
 animate();
 
 
 
-// Render Scene
+// Animate Scene
 function animate() {
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
-    dragon.rotation.x += 0.01;
-    dragon.rotation.y += 0.01;
+    update.controls();
+
+    // dragon.rotation.x += 0.01;
+    // dragon.rotation.y += 0.01;
 }
 
 
