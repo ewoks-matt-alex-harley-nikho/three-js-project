@@ -110,17 +110,15 @@ createClouds = function () {
 
     this.mesh = new THREE.Object3D();
 
-    var boxClouds = new THREE.BoxGeometry(20, 20, 20);
+    var boxCloud = new THREE.BoxGeometry(20, 20, 20);
     var boxCloudMat = new THREE.MeshPhongMaterial({
         color: Colors.white
     });
 
-    var cloudBlocks = 3 + Math.floor(Math.random() * 3);
+    var cloudBlocks = 4.5 + Math.floor(Math.random() * 3);
 
     for (var i = 0; i < cloudBlocks; i++) {
-
-        var newMesh = THREE.Mesh(boxClouds, boxCloudMat)
-
+        var newMesh = new THREE.Mesh(boxCloud, boxCloudMat)
         newMesh.position.x = i * 10;
         newMesh.position.y = Math.random() * 15;
         newMesh.rotation.y = Math.random() * Math.PI * 2;
@@ -128,7 +126,7 @@ createClouds = function () {
         newMesh.rotation.z = Math.random() * Math.PI * 2;
 
 
-        var cloudSize = .1 + Math.random() * .9;
+        var cloudSize = .1 + Math.random() * 1.5;
         newMesh.scale.set(cloudSize, cloudSize, cloudSize);
 
         // allow each cube to cast and to receive shadows
@@ -159,9 +157,8 @@ skyObjects = function () {
         // set the rotation and the position of each cloud;
         // for that we use a bit of trigonometry
         var a = stepAngle * i; // this is the final angle of the cloud
-        var h = 750 + Math.random() * 200; // this is the distance between the center of the axis and the cloud itself
+        var h = 750 + Math.random() * 500; // this is the distance between the center of the axis and the cloud itself
 
-        // Trigonometry!!! I hope you remember what you've learned in Math :)
         // in case you don't:
         // we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
         c.mesh.position.y = Math.sin(a) * h;
@@ -170,7 +167,6 @@ skyObjects = function () {
         // rotate the cloud according to its position
         c.mesh.rotation.z = a + Math.PI / 2;
 
-        // for a better result, we position the clouds
         // at random depths inside of the scene
         c.mesh.position.z = -400 - Math.random() * 400;
 
@@ -186,7 +182,7 @@ skyObjects = function () {
 // Now we instantiate the sky and push its center a bit
 // towards the bottom of the screen
 function createSky() {
-    sky = new skyObjects();
+    sky = new skyObjects;
     sky.mesh.position.y = -600;
     scene.add(sky.mesh);
 }
@@ -261,8 +257,9 @@ function animate() {
     renderer.render(scene, camera);
     // controls.update(); // Fix, not working
 
-    // dragon.rotation.x += 0.01;
-    // dragon.rotation.y += 0.01;
+    sky.mesh.rotation.z += .01;
+
+
 }
 
 
