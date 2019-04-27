@@ -8,6 +8,7 @@ var appContainer,
     createClouds,
     camera,
     Colors,
+    dragonFullBody,
     hemisphereLight,
     HEIGHT,
     renderer,
@@ -68,6 +69,9 @@ function createScene() {
     appContainer.appendChild(renderer.domElement);
 }
 
+createScene();
+
+
 function createLights() {
     // A hemisphere light is a gradient colored light;
     // the first parameter is the sky color, the second parameter is the ground color,
@@ -101,6 +105,8 @@ function createLights() {
     scene.add(shadowLight);
 
 }
+
+createLights();
 
 //////////////////////////////
 ///////// Clouds ////////////
@@ -177,15 +183,15 @@ function createSky() {
     scene.add(sky.mesh);
 }
 
+createSky();
+
+//////////////////////////////
+//     Dragon Body Geom    //
+/////////////////////////////
 
 var dragon = function () {
 
     this.mesh = new THREE.Object3D();
-
-
-    //////////////////////////////
-    //     Dragon Body Geom    //
-    /////////////////////////////
 
     // Body
     var bodyGeom = new THREE.BoxGeometry(60, 50, 50, 1, 1, 1);
@@ -193,17 +199,41 @@ var dragon = function () {
     var dragonBody = new THREE.Mesh(bodyGeom, bodyMaterial);
     dragonBody.castShadow = true;
     dragonBody.receiveShadow = true;
-    this.mesh.add(dragonBody);
+
 
     // Wings
-    var wingGeom = new THREE.BoxGeometry(40, 8, 150, 1, 1, 1);
-    var wingMaterial = new THREE.MeshPhongMaterial({color: Colors.red});
-    var dragonWings = new THREE.Mesh(wingGeom, wingMaterial);
-    dragonWings.castShadow = true;
-    dragonWings.receiveShadow = true;
-    this.mesh.add(dragonWings);
+    // var wingGeom = new THREE.BoxGeometry(40, 8, 150, 1, 1, 1);
+    // var wingMaterial = new THREE.MeshPhongMaterial({color: Colors.brown});
+    // var dragonWings = new THREE.Mesh(wingGeom, wingMaterial);
+    // dragonWings.castShadow = true;
+    // dragonWings.receiveShadow = true;
 
-    // // Face
+    // Wings
+    this.wingL = makeCube(Colors.red, 5, 30, 20, 15, 15, 0, -Math.PI / 4, 0, -Math.PI / 4);
+    this.wingL.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 15, 10));
+    this.wingR = this.wingL.clone();
+    this.wingR.position.x = -this.wingL.position.x;
+    this.wingR.rotation.z = -this.wingL.rotation.z;
+
+
+    // Tail
+    var tailGeom = new THREE.BoxGeometry(15, 21, 6, 1, 1, 1);
+    var tailMaterial = new THREE.MeshPhongMaterial({color: Colors.green});
+    var dragonTail = new THREE.Mesh(tailGeom, tailMaterial);
+    dragonTail.castShadow = true;
+    dragonTail.receiveShadow = true;
+
+
+    // Horns
+    var hornGeom = new THREE.BoxGeometry(3, 3, 6, 1, 1, 1);
+    var hornMaterial = new THREE.MeshPhongMaterial({color: Colors.brown});
+    var dragonHorns = new THREE.Mesh(hornGeom, hornMaterial);
+
+
+    this.mesh.add(dragonBody, dragonWings, dragonTail,  dragonHorns);
+
+    // Additional face work needed
+    // Face
     // var faceGeom = new THREE.BoxGeometry(1, 1, 1 );
     // var faceMaterial = greenMat;
     //
@@ -215,36 +245,19 @@ var dragon = function () {
     // var pupilGeom = new THREE.PlaneGeometry (.3, .3, .3);
     // var pupilMaterial     = blueMat;
 
-    // Horns
-    var hornGeom = new THREE.BoxGeometry(3, 3, 6, 1, 1, 1);
-    var hornMaterial = new THREE.MeshPhongMaterial({color: Colors.brown});
-    var dragonHorns = new THREE.Mesh(hornGeom, hornMaterial);
-    this.mesh.add(dragonHorns);
-
-    // Tail
-    var tailGeom = new THREE.BoxGeometry(15, 21, 6, 1, 1, 1);
-    var tailMaterial = new THREE.MeshPhongMaterial({color: Colors.green});
-    var dragonTail = new THREE.Mesh(tailGeom, tailMaterial);
-    dragonTail.castShadow = true;
-    dragonTail.receiveShadow = true;
-    this.mesh.add(dragonTail);
 };
 
-var dragonFullBody;
-
 function createDragon() {
+
     dragonFullBody = new dragon();
     dragonFullBody.mesh.scale.set(.25, .25, .25);
     dragonFullBody.mesh.position.y = 100;
     scene.add(dragonFullBody.mesh);
 }
 
-
-createScene();
-createLights();
-createSky();
 createDragon();
-animate();
+
+
 
 
 // Animate Scene
@@ -252,9 +265,10 @@ function animate() {
 
     sky.mesh.rotation.z += .01;
     renderer.render(scene, camera);
-
     requestAnimationFrame(animate);
 }
+
+animate();
 
 
 
