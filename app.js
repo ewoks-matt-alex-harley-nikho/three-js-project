@@ -3,13 +3,9 @@
 //Global stuff
 
 var appContainer,
-    birdFullBody,
     controls,
     createClouds,
     camera,
-    controls,
-    Colors,
-    dragonFullBody,
     hemisphereLight,
     HEIGHT,
     renderer,
@@ -30,49 +26,64 @@ var appContainer,
         green: 0x616f39
     };
 
-HEIGHT = window.innerHeight;
-WIDTH = window.innerWidth;
+
+
+
+// Initial Global Settings
+
+function init() {
+
+
+}
+
+init();
+
 
 // Scene Creation
 
 function createScene() {
 
+    HEIGHT = window.innerHeight;
+    WIDTH = window.innerWidth;
+
     // Scene setup
     scene = new THREE.Scene();
-
 
     // Calls on WebGL
     renderer = new THREE.WebGLRenderer({
         alpha: true,
         antialias: true
     });
+    renderer.setSize(WIDTH, HEIGHT);
+    renderer.shadowMap.enabled = true;
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
-
-    // camera
-
-    // Camera setup: FoV, perspective, near, far
-    camera = new THREE.PerspectiveCamera(85, window.innerWidth / window.innerHeight, .5, 1000);
-    camera.position.set(0, 200, 800);
-    camera.lookAt(scene.position);
-
-    controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-
-    // controls
-
-    // controls = new THREE.OrbitControls(camera);
-    // controls.update();
-
+    renderer.setPixelRatio( window.devicePixelRatio );
+    renderer.setSize(WIDTH, HEIGHT);
+    renderer.shadowMapEnabled = true;
 
     // Creates Fog - distance based
     scene.fog = new THREE.Fog(0xf7d9aa, 10, 950);
 
     // Scene Render and DOM call
-    renderer.setSize(WIDTH, HEIGHT);
-    renderer.shadowMap.enabled = true;
-    renderer.setSize(window.innerWidth, window.innerHeight);
     appContainer = document.getElementById('app');
     appContainer.appendChild(renderer.domElement);
+
+    // Camera setup: FoV, perspective, near, far
+    camera = new THREE.PerspectiveCamera(85, window.innerWidth / window.innerHeight, .5, 1000);
+    camera.position.y = 2;
+    camera.position.z = 2;
+
+
+    // Camera Controls
+    controls = new THREE.OrbitControls(camera);
+    controls.noZoom = true;
+    controls.noPan = true;
+    controls.update();
+
+
+
+
 }
 
 createScene();
@@ -109,7 +120,6 @@ function createLights() {
     // to activate the lights, just add them to the scene
     scene.add(hemisphereLight);
     scene.add(shadowLight);
-
 }
 
 createLights();
@@ -316,7 +326,6 @@ function animate() {
     // birdTail.rotation.x += .01;
 
     sky.mesh.rotation.z += .01;
-    controls.update();
     renderer.render(scene, camera);
 }
 
