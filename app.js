@@ -28,17 +28,6 @@ var appContainer,
 
 
 
-
-// Initial Global Settings
-
-function init() {
-
-
-}
-
-init();
-
-
 // Scene Creation
 
 function createScene() {
@@ -74,15 +63,11 @@ function createScene() {
     camera.position.y = 2;
     camera.position.z = 2;
 
-
     // Camera Controls
-    controls = new THREE.OrbitControls(camera);
-    controls.noZoom = true;
-    controls.noPan = true;
+    controls = new THREE.OrbitControls(camera, appContainer);
+    controls.enableZoom = true;
+    controls.enablePan = true;
     controls.update();
-
-
-
 
 }
 
@@ -232,13 +217,10 @@ scene.add(birdBody);
 var tailGeom = new THREE.BoxGeometry(.2, .1, 1);
 var tailMaterial = new THREE.MeshPhongMaterial({color: Colors.brown});
 var birdTail = new THREE.Mesh(tailGeom, tailMaterial);
-birdTail.position.set(-0.6, 0, 0.1);
+birdTail.position.set(-0.2, 0, 0.1);
 birdTail.castShadow = true;
 birdTail.receiveShadow = true;
 scene.add(birdTail);
-
-
-
 
 
 // //////////////////////////////
@@ -319,12 +301,7 @@ function animate() {
 
     requestAnimationFrame(animate);
 
-    // birdBody.rotation.y += .01;
-    // birdBody.rotation.x += .01;
-    //
-    // birdTail.rotation.y += .01;
-    // birdTail.rotation.x += .01;
-
+    controls.update();
     sky.mesh.rotation.z += .01;
     renderer.render(scene, camera);
 }
